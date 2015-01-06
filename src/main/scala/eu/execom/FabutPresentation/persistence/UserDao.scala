@@ -82,10 +82,10 @@ case class User(private var _id: Int, private var _firstName: String, private va
 }
 
 object User {
-  val ID: String = "_id"
-  val FIRSTNAME: String = "_firstName"
-  val LASTNAME: String = "_lastName"
-  val EMAIL: String = "_email"
+  val ID: String = "id"
+  val FIRSTNAME: String = "firstName"
+  val LASTNAME: String = "lastName"
+  val EMAIL: String = "email"
 }
 
 object USER_FIRSTNAME_MIN_SIZE extends DataConstraintException("USER_FIRSTNAME_MIN_SIZE")

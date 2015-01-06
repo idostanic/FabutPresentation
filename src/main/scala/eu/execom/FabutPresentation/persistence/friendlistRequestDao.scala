@@ -9,7 +9,7 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
+import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
 
 case class friendlistRequest(private var _id: Int, private var _requesterId: Int, private var _requesteeId: Int, private var _status: String) {
 
@@ -83,10 +83,10 @@ case class friendlistRequest(private var _id: Int, private var _requesterId: Int
 }
 
 object friendlistRequest {
-  val ID: String = "_id"
-  val REQUESTERID: String = "_requesterId"
-  val REQUESTEEID: String = "_requesteeId"
-  val STATUS: String = "_status"
+  val ID: String = "id"
+  val REQUESTERID: String = "requesterId"
+  val REQUESTEEID: String = "requesteeId"
+  val STATUS: String = "status"
 }
 
 object FRIENDLISTREQUEST_STATUS_IS_REQUIRED extends BadRequestException("FRIENDLISTREQUEST_STATUS_IS_REQUIRED")
@@ -104,10 +104,10 @@ class friendlistRequests(tag: Tag) extends Table[friendlistRequest](tag, "friend
 
   val create = friendlistRequest.apply _
   def * = (id, requesterId, requesteeId, status) <> (create.tupled, friendlistRequest.unapply)
-  def ? = (id.?, requesterId.?, requesteeId.?, status.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+  def ? = (id.?, requesterId.?, requesteeId.?, status.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-  def requester= foreignKey("FRIENDLISTREQUEST_REQUESTER_FK", requesterId, TableQuery[Users])(_.id)
-  def requestee= foreignKey("FRIENDLISTREQUEST_REQUESTEE_FK", requesteeId, TableQuery[Users])(_.id)
+  def requester = foreignKey("FRIENDLISTREQUEST_REQUESTER_FK", requesterId, TableQuery[Users])(_.id)
+  def requestee = foreignKey("FRIENDLISTREQUEST_REQUESTEE_FK", requesteeId, TableQuery[Users])(_.id)
 }
 
 class friendlistRequestDao extends GenericSlickDao[friendlistRequest] {

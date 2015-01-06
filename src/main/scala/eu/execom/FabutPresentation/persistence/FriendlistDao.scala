@@ -9,7 +9,7 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
+import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
 
 case class Friendlist(private var _id: Int, private var _friend1Id: Int, private var _friend2Id: Int) {
 
@@ -69,9 +69,9 @@ case class Friendlist(private var _id: Int, private var _friend1Id: Int, private
 }
 
 object Friendlist {
-  val ID: String = "_id"
-  val FRIEND1ID: String = "_friend1Id"
-  val FRIEND2ID: String = "_friend2Id"
+  val ID: String = "id"
+  val FRIEND1ID: String = "friend1Id"
+  val FRIEND2ID: String = "friend2Id"
 }
 
 object FRIENDLIST_DOESNT_EXIST extends DataConstraintException("FRIENDLIST_DOESNT_EXIST")
@@ -86,10 +86,10 @@ class Friendlists(tag: Tag) extends Table[Friendlist](tag, "Friendlist") {
 
   val create = Friendlist.apply _
   def * = (id, friend1Id, friend2Id) <> (create.tupled, Friendlist.unapply)
-  def ? = (id.?, friend1Id.?, friend2Id.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+  def ? = (id.?, friend1Id.?, friend2Id.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-  def friend1= foreignKey("FRIENDLIST_FRIEND1_FK", friend1Id, TableQuery[Users])(_.id)
-  def friend2= foreignKey("FRIENDLIST_FRIEND2_FK", friend2Id, TableQuery[Users])(_.id)
+  def friend1 = foreignKey("FRIENDLIST_FRIEND1_FK", friend1Id, TableQuery[Users])(_.id)
+  def friend2 = foreignKey("FRIENDLIST_FRIEND2_FK", friend2Id, TableQuery[Users])(_.id)
 }
 
 class FriendlistDao extends GenericSlickDao[Friendlist] {
