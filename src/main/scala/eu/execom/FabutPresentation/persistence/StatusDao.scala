@@ -9,7 +9,7 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
+import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
 case class Status(private var _id: Int, private var _content: String, private var _fromIdId: Int, private var _creationDate: Date) {
 
@@ -84,10 +84,10 @@ case class Status(private var _id: Int, private var _content: String, private va
 }
 
 object Status {
-  val ID: String = "id"
-  val CONTENT: String = "content"
-  val FROMIDID: String = "fromIdId"
-  val CREATIONDATE: String = "creationDate"
+  val ID: String = "_id"
+  val CONTENT: String = "_content"
+  val FROMIDID: String = "_fromIdId"
+  val CREATIONDATE: String = "_creationDate"
 }
 
 object STATUS_CONTENT_MIN_SIZE extends DataConstraintException("STATUS_CONTENT_MIN_SIZE")
@@ -111,9 +111,9 @@ class Statuss(tag: Tag) extends Table[Status](tag, "Status") {
 
   val create = Status.apply _
   def * = (id, content, fromIdId, creationDate) <> (create.tupled, Status.unapply)
-  def ? = (id.?, content.?, fromIdId.?, creationDate.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+  def ? = (id.?, content.?, fromIdId.?, creationDate.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
-  def fromId = foreignKey("STATUS_FROMID_FK", fromIdId, TableQuery[Users])(_.id)
+  def fromId= foreignKey("STATUS_FROMID_FK", fromIdId, TableQuery[Users])(_.id)
 }
 
 class StatusDao extends GenericSlickDao[Status] {

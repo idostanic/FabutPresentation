@@ -9,9 +9,9 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
+import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
-case class User(private var _id: Int, private var _firstName: String, private var _lastName: String, private var _email: String) {
+case class User(private var _id: Int, private var _firstName: String, private var _lastName: Option[String], private var _email: String) {
 
   private var id_persisted: Int = id
   def idPersisted: Int = id_persisted
@@ -35,16 +35,15 @@ case class User(private var _id: Int, private var _firstName: String, private va
     _firstName = newFirstName
   }
 
-  private var lastName_persisted: String = lastName
-  def lastNamePersisted: String = lastName_persisted
+  private var lastName_persisted: Option[String] = lastName
+  def lastNamePersisted: Option[String] = lastName_persisted
 
-  def lastName: String = _lastName
-  def lastName_=(newLastName: String)(implicit session: SlickSession): Any = if (newLastName != lastName) {
-
-    if (newLastName == null) throw USER_LASTNAME_IS_REQUIRED
-    if (newLastName.size < 0) throw USER_LASTNAME_MIN_SIZE
-    if (newLastName.size > 1024) throw USER_LASTNAME_MAX_SIZE
-
+  def lastName: Option[String] = _lastName
+  def lastName_=(newLastName: Option[String])(implicit session: SlickSession): Any = if (newLastName != lastName) {
+    if (newLastName.isDefined) {
+      if (newLastName.get.size < 0) throw USER_LASTNAME_MIN_SIZE
+      if (newLastName.get.size > 1024) throw USER_LASTNAME_MAX_SIZE
+    }
     _lastName = newLastName
   }
 
@@ -62,11 +61,12 @@ case class User(private var _id: Int, private var _firstName: String, private va
     _email = newEmail
   }
 
+
   def this(entity: User) = this(entity._id, entity._firstName, entity._lastName, entity._email)
 
-  def this() = this(0, "", "", "")
+  def this() = this(0, "", None, "")
 
-  def this(firstName: String, lastName: String, email: String)(implicit session: SlickSession) = {
+  def this(firstName: String, lastName: Option[String], email: String)(implicit session: SlickSession) = {
     this()
     this.firstName_=(firstName)(session)
     this.lastName_=(lastName)(session)
@@ -82,10 +82,10 @@ case class User(private var _id: Int, private var _firstName: String, private va
 }
 
 object User {
-  val ID: String = "id"
-  val FIRSTNAME: String = "firstName"
-  val LASTNAME: String = "lastName"
-  val EMAIL: String = "email"
+  val ID: String = "_id"
+  val FIRSTNAME: String = "_firstName"
+  val LASTNAME: String = "_lastName"
+  val EMAIL: String = "_email"
 }
 
 object USER_FIRSTNAME_MIN_SIZE extends DataConstraintException("USER_FIRSTNAME_MIN_SIZE")
@@ -97,8 +97,6 @@ object USER_FIRSTNAME_IS_REQUIRED extends BadRequestException("USER_FIRSTNAME_IS
 object USER_LASTNAME_MIN_SIZE extends DataConstraintException("USER_LASTNAME_MIN_SIZE")
 
 object USER_LASTNAME_MAX_SIZE extends DataConstraintException("USER_LASTNAME_MAX_SIZE")
-
-object USER_LASTNAME_IS_REQUIRED extends BadRequestException("USER_LASTNAME_IS_REQUIRED")
 
 object USER_EMAIL_MIN_SIZE extends DataConstraintException("USER_EMAIL_MIN_SIZE")
 
@@ -116,12 +114,13 @@ class Users(tag: Tag) extends Table[User](tag, "User") {
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def firstName = column[String]("firstName")
-  def lastName = column[String]("lastName")
+  def lastName = column[Option[String]]("lastName")
   def email = column[String]("email")
 
   val create = User.apply _
   def * = (id, firstName, lastName, email) <> (create.tupled, User.unapply)
-  def ? = (id.?, firstName.?, lastName.?, email.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+  def ? = (id.?, firstName.?, lastName, email.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
 
 }
 
@@ -207,11 +206,14 @@ class UserDao extends GenericSlickDao[User] {
     query.list
   }
 
-  def findByLastName(lastName: String)(implicit session: SlickSession): List[User] = {
+  def findByLastName(lastName: Option[String])(implicit session: SlickSession): List[User] = {
     logger.trace(s".findByLastName(lastName: $lastName)")
 
     var query: Query[Users, Users#TableElementType, Seq] = TableQuery[Users]
-    query = query.filter(_.lastName === lastName)
+    lastName match {
+      case Some(value) => query = query.filter(_.lastName === value)
+      case None => query = query.filter(_.lastName.isEmpty)
+    }
 
     query.list
   }
@@ -224,6 +226,5 @@ class UserDao extends GenericSlickDao[User] {
 
     query.firstOption
   }
-  def a {}
 
 }

@@ -9,9 +9,9 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
+import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
-case class friendlistRequest(private var _id: Int, private var _requesterId: Int, private var _requesteeId: Int, private var _status: String) {
+case class FriendlistRequest(private var _id: Int, private var _requesterId: Int, private var _requesteeId: Int, private var _status: String) {
 
   private var id_persisted: Int = id
   def idPersisted: Int = id_persisted
@@ -56,7 +56,7 @@ case class friendlistRequest(private var _id: Int, private var _requesterId: Int
   def requestee(implicit session: SlickSession): User = TableQuery[Users].filter(_.id === requesteeId).first
   def requestee_=(requestee: User)(implicit session: SlickSession) = requesteeId = requestee.id
 
-  def this(entity: friendlistRequest) = this(entity._id, entity._requesterId, entity._requesteeId, entity._status)
+  def this(entity: FriendlistRequest) = this(entity._id, entity._requesterId, entity._requesteeId, entity._status)
 
   def this() = this(0, 0, 0, FriendRequestStatus.PENDING.name)
 
@@ -82,11 +82,11 @@ case class friendlistRequest(private var _id: Int, private var _requesterId: Int
   }
 }
 
-object friendlistRequest {
-  val ID: String = "id"
-  val REQUESTERID: String = "requesterId"
-  val REQUESTEEID: String = "requesteeId"
-  val STATUS: String = "status"
+object FriendlistRequest {
+  val ID: String = "_id"
+  val REQUESTERID: String = "_requesterId"
+  val REQUESTEEID: String = "_requesteeId"
+  val STATUS: String = "_status"
 }
 
 object FRIENDLISTREQUEST_STATUS_IS_REQUIRED extends BadRequestException("FRIENDLISTREQUEST_STATUS_IS_REQUIRED")
@@ -95,34 +95,34 @@ object FRIENDLISTREQUEST_DOESNT_EXIST extends DataConstraintException("FRIENDLIS
 
 object FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE")
 
-class friendlistRequests(tag: Tag) extends Table[friendlistRequest](tag, "friendlistRequest") {
+class FriendlistRequests(tag: Tag) extends Table[FriendlistRequest](tag, "FriendlistRequest") {
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def requesterId = column[Int]("requesterId")
   def requesteeId = column[Int]("requesteeId")
   def status = column[String]("status")
 
-  val create = friendlistRequest.apply _
-  def * = (id, requesterId, requesteeId, status) <> (create.tupled, friendlistRequest.unapply)
-  def ? = (id.?, requesterId.?, requesteeId.?, status.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+  val create = FriendlistRequest.apply _
+  def * = (id, requesterId, requesteeId, status) <> (create.tupled, FriendlistRequest.unapply)
+  def ? = (id.?, requesterId.?, requesteeId.?, status.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
-  def requester = foreignKey("FRIENDLISTREQUEST_REQUESTER_FK", requesterId, TableQuery[Users])(_.id)
-  def requestee = foreignKey("FRIENDLISTREQUEST_REQUESTEE_FK", requesteeId, TableQuery[Users])(_.id)
+  def requester= foreignKey("FRIENDLISTREQUEST_REQUESTER_FK", requesterId, TableQuery[Users])(_.id)
+  def requestee= foreignKey("FRIENDLISTREQUEST_REQUESTEE_FK", requesteeId, TableQuery[Users])(_.id)
 }
 
-class friendlistRequestDao extends GenericSlickDao[friendlistRequest] {
+class FriendlistRequestDao extends GenericSlickDao[FriendlistRequest] {
 
-  def save(entity: friendlistRequest)(implicit session: SlickSession): Unit = {
+  def save(entity: FriendlistRequest)(implicit session: SlickSession): Unit = {
     logger.trace(s".save(entity: $entity)")
-    val tableQuery = TableQuery[friendlistRequests]
+    val tableQuery = TableQuery[FriendlistRequests]
     val id = tableQuery returning tableQuery.map(_.id) += entity
     entity.id = id
     entity.persisted()
   }
 
-  def save(entities: List[friendlistRequest])(implicit session: SlickSession): Unit = {
+  def save(entities: List[FriendlistRequest])(implicit session: SlickSession): Unit = {
     logger.trace(s".save(entities: $entities)")
-    val tableQuery = TableQuery[friendlistRequests]
+    val tableQuery = TableQuery[FriendlistRequests]
     val ids = tableQuery returning tableQuery.map(_.id) ++= entities
     ids.zip(entities).foreach(idWithEntity => {
       val id = idWithEntity._1
@@ -133,17 +133,17 @@ class friendlistRequestDao extends GenericSlickDao[friendlistRequest] {
 
   }
 
-  def update(entity: friendlistRequest)(implicit session: SlickSession): Unit = {
+  def update(entity: FriendlistRequest)(implicit session: SlickSession): Unit = {
     logger.trace(s".update(entity: $entity)")
-    val tableQuery = TableQuery[friendlistRequests]
+    val tableQuery = TableQuery[FriendlistRequests]
     tableQuery.filter(_.id === entity.id).update(entity)
     entity.persisted()
   }
 
-  def findAll()(implicit session: SlickSession): List[friendlistRequest] = {
+  def findAll()(implicit session: SlickSession): List[FriendlistRequest] = {
     logger.trace(s".findAll()")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
 
     query.list
   }
@@ -151,15 +151,15 @@ class friendlistRequestDao extends GenericSlickDao[friendlistRequest] {
   def countAll()(implicit session: SlickSession): Int = {
     logger.trace(s".countAll()")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
 
     query.length.run
   }
 
-  def getById(id: Int)(implicit session: SlickSession): friendlistRequest = {
+  def getById(id: Int)(implicit session: SlickSession): FriendlistRequest = {
     logger.trace(s".getById(id: $id)")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
     query = query.filter(_.id === id)
 
     query.firstOption.getOrElse(throw FRIENDLISTREQUEST_DOESNT_EXIST)
@@ -168,44 +168,54 @@ class friendlistRequestDao extends GenericSlickDao[friendlistRequest] {
   def deleteById(id: Int)(implicit session: SlickSession): Boolean = {
     logger.trace(s".deleteById(id: $id)")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
     query = query.filter(_.id === id)
 
     query.delete != 0
   }
 
-  def findById(id: Int)(implicit session: SlickSession): Option[friendlistRequest] = {
+  def findById(id: Int)(implicit session: SlickSession): Option[FriendlistRequest] = {
     logger.trace(s".findById(id: $id)")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
     query = query.filter(_.id === id)
 
     query.firstOption
   }
 
-  def findByRequesterId(requesterId: Int)(implicit session: SlickSession): List[friendlistRequest] = {
+  def findByRequesterId(requesterId: Int)(implicit session: SlickSession): List[FriendlistRequest] = {
     logger.trace(s".findByRequesterId(requesterId: $requesterId)")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
     query = query.filter(_.requesterId === requesterId)
 
     query.list
   }
 
-  def findByRequesteeId(requesteeId: Int)(implicit session: SlickSession): List[friendlistRequest] = {
+  def findByRequesteeId(requesteeId: Int)(implicit session: SlickSession): List[FriendlistRequest] = {
     logger.trace(s".findByRequesteeId(requesteeId: $requesteeId)")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
     query = query.filter(_.requesteeId === requesteeId)
 
     query.list
   }
 
-  def findByStatus(status: FriendRequestStatus)(implicit session: SlickSession): List[friendlistRequest] = {
+  def findByStatus(status: FriendRequestStatus)(implicit session: SlickSession): List[FriendlistRequest] = {
     logger.trace(s".findByStatus(status: $status)")
 
-    var query: Query[friendlistRequests, friendlistRequests#TableElementType, Seq] = TableQuery[friendlistRequests]
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
     query = query.filter(_.status === status.name)
+
+    query.list
+  }
+
+  def findByRequesterIDRequesteeID(requesterID: Int, requesteeID: Int)(implicit session: SlickSession): List[FriendlistRequest] = {
+    logger.trace(s".findByRequesterIDRequesteeID(requesterID: $requesterID, requesteeID: $requesteeID)")
+
+    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
+    query = query.filter(_.requesterId === requesterID)
+    query = query.filter(_.requesteeId === requesteeID)
 
     query.list
   }
