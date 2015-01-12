@@ -49,6 +49,10 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
   val statusUserId = status.reference("fromId", userId)
   val statusDate = status.date("creationDate")
 
+  //  ERRORS
+  val usersAlreadyConnected = badRequestError("USERS_ALREADY_CONNECTED")
+  val FriendlistRequestAlreadySent = badRequestError("FRIENDLIST_REQUEST_ALREADY_SENT")
+
   //  DAOs
   val friendlistRequestByRequesterIdRequesteeId = friendlistRequest.dao.findMethod(
     friendlistRequest.query.

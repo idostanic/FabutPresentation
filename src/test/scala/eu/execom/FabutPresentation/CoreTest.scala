@@ -1,7 +1,8 @@
 package eu.execom.FabutPresentation
 
-import java.sql.{ Blob, Date, Timestamp }
+import java.sql.{Blob, Date, Timestamp}
 import java.util.UUID
+
 import eu.execom.FabutPresentation.AppTestConfiguration._
 import eu.execom.FabutPresentation.persistence._
 import eu.execom.fabut._
@@ -9,30 +10,28 @@ import junit.framework.AssertionFailedError
 import org.joda.time.DateTime
 import org.junit.Assert._
 import org.junit.Assert._
+
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
-import org.junit.Before
-import org.junit.After
-import scala.reflect.runtime.universe.{ Type, typeOf }
+import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
-abstract class CoreTest extends FabutRepository {
+abstract class CoreTest extends AbstractFabutTest with IFabutRepositoryTest {
+
 
   implicit var slickSession: SlickSession = null
-  @Before
-  override def before() = {
+  override def fabutBeforeTest() = {
 
     //opening test transaction
     slickSession = slickDb.createSession()
     slickSession.conn.setAutoCommit(false)
-    beforeTest()
+    Fabut.beforeTest(this)
 
   }
-  @After
-  override def after() = {
+
+  override def fabutAfterTest() = {
 
     try {
-      afterTest()
+      Fabut.afterTest()
     } finally {
 
       // simulating transaction
@@ -41,25 +40,28 @@ abstract class CoreTest extends FabutRepository {
     }
   }
 
-  override def entityTypes: List[Type] = typeOf[User] :: typeOf[Invitation] :: typeOf[Friendlist] :: typeOf[FriendlistRequest] :: typeOf[Status] :: Nil
-  override def complexTypes: List[Type] = Nil
-  override def ignoredTypes: List[Type] = Nil
+  override def getEntityTypes: java.util.List[Class[_]] = classOf[User] :: classOf[Invitation] :: classOf[Friendlist] :: classOf[FriendlistRequest] :: classOf[Status] :: Nil
+  override def getComplexTypes: java.util.List[Class[_]] = Nil
+  override def getIgnoredTypes: java.util.List[Class[_]] = Nil
 
-  override def findById(entityClass: Type, id: Any): Any =
-    if (entityClass == typeOf[User]) userDao.findById(id.asInstanceOf[Int]).orNull
-    else if (entityClass == typeOf[Invitation]) invitationDao.findById(id.asInstanceOf[Int]).orNull
-    else if (entityClass == typeOf[Friendlist]) friendlistDao.findById(id.asInstanceOf[Int]).orNull
-    else if (entityClass == typeOf[FriendlistRequest]) friendlistRequestDao.findById(id.asInstanceOf[Int]).orNull
-    else if (entityClass == typeOf[Status]) statusDao.findById(id.asInstanceOf[Int]).orNull
+
+  override def findById(entityClass: Class[_], id: AnyRef): AnyRef =
+    if (entityClass == classOf[User]) userDao.findById(id.asInstanceOf[Int]).orNull
+    else if (entityClass == classOf[Invitation]) invitationDao.findById(id.asInstanceOf[Int]).orNull
+    else if (entityClass == classOf[Friendlist]) friendlistDao.findById(id.asInstanceOf[Int]).orNull
+    else if (entityClass == classOf[FriendlistRequest]) friendlistRequestDao.findById(id.asInstanceOf[Int]).orNull
+    else if (entityClass == classOf[Status]) statusDao.findById(id.asInstanceOf[Int]).orNull
     else throw new IllegalStateException("Unsupported entity class " + entityClass)
 
-  override def findAll(entityClass: Type): List[Any] =
-    if (entityClass == typeOf[User]) userDao.findAll
-    else if (entityClass == typeOf[Invitation]) invitationDao.findAll
-    else if (entityClass == typeOf[Friendlist]) friendlistDao.findAll
-    else if (entityClass == typeOf[FriendlistRequest]) friendlistRequestDao.findAll
-    else if (entityClass == typeOf[Status]) statusDao.findAll
+
+  override def findAll(entityClass: Class[_]): java.util.List[_] =
+    if (entityClass == classOf[User]) userDao.findAll
+    else if (entityClass == classOf[Invitation]) invitationDao.findAll
+    else if (entityClass == classOf[Friendlist]) friendlistDao.findAll
+    else if (entityClass == classOf[FriendlistRequest]) friendlistRequestDao.findAll
+    else if (entityClass == classOf[Status]) statusDao.findAll
     else throw new IllegalStateException("Unsupported entity class " + entityClass)
+
 
   override def customAssertEquals(expected: Any, actual: Any) = (expected, actual) match {
     case (e: Timestamp, a: Timestamp) => assertTrue(Math.abs(e.getTime - a.getTime) < 1000)
