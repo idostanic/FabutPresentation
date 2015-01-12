@@ -33,10 +33,10 @@ class FriendlistRequestService(val friendlistRequestDao: FriendlistRequestDao, v
       case Some(friendlistRequest) =>
         friendlistRequest.status match {
           case FriendRequestStatus.SENT =>
-            //            throw new already sent
+            throw FRIENDLIST_REQUEST_ALREADY_SENT
             println("already sent")
           case FriendRequestStatus.CONNECTED =>
-            //             throw new already connected
+            throw USERS_ALREADY_CONNECTED
             println("already connected")
           case FriendRequestStatus.PENDING =>
             val friendlistRequestReverse = friendlistRequestDao.findByRequesterIdRequesteeId(user2Id, user1Id).get

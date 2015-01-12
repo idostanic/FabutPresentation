@@ -6,6 +6,10 @@ import eu.execom.FabutPresentation.service.FriendlistRequestService
 import eu.execom.FabutPresentation.AppTestConfiguration._
 import eu.execom.dry.generator.TODAY
 import org.junit.Assert._
+import eu.execom.FabutPresentation.service.USERS_ALREADY_CONNECTED
+import eu.execom.FabutPresentation.service.USERS_ALREADY_CONNECTED
+import eu.execom.FabutPresentation.util.BadRequestException
+import org.joda.time.DateTime
 
 class FriendlistRequestPersistenceTest extends CoreTest {
 
@@ -48,6 +52,7 @@ class FriendlistRequestPersistenceTest extends CoreTest {
     userDao.save(user2)
     friendlistRequestDao.save(new FriendlistRequest(user1.id, user2.id, FriendRequestStatus.SENT))
     friendlistRequestDao.save(new FriendlistRequest(user2.id, user1.id, FriendRequestStatus.PENDING))
+
     //    method
     takeSnapshot()
     friendlistRequestService.sendFriendlistRequest(user2.id, user1.id)
@@ -82,6 +87,38 @@ class FriendlistRequestPersistenceTest extends CoreTest {
       value(Friendlist.FRIEND1ID, user1.id),
       value(Friendlist.FRIEND2ID, user2.id),
       notNull(Friendlist.CONNECTIONDATE))
+  }
+
+  @Test(expected = classOf[BadRequestException])
+  def friendlistRequestWithRequestAlreadySent = {
+
+    //    setup
+    val user1 = new User("pera", Some("peric"), "pera@peric.com")
+    val user2 = new User("mika", Some("mikic"), "mika@mikic.com")
+    userDao.save(user1)
+    userDao.save(user2)
+    friendlistRequestService.sendFriendlistRequest(user1.id, user2.id)
+
+    //    method
+    takeSnapshot()
+    friendlistRequestService.sendFriendlistRequest(user1.id, user2.id)
+
+  }
+
+  @Test(expected = classOf[BadRequestException])
+  def friendlistRequestWithUsersAlreadyConnected = {
+
+    //    setup
+    val user1 = new User("pera", Some("peric"), "pera@peric.com")
+    val user2 = new User("mika", Some("mikic"), "mika@mikic.com")
+    userDao.save(user1)
+    userDao.save(user2)
+    friendlistRequestService.sendFriendlistRequest(user1.id, user2.id)
+    friendlistRequestService.sendFriendlistRequest(user2.id, user1.id)
+
+    //    method
+    takeSnapshot()
+    friendlistRequestService.sendFriendlistRequest(user1.id, user2.id)
 
   }
 
