@@ -30,8 +30,9 @@ case class FriendRequestStatus(name: String) extends Enum
 
 object FriendRequestStatus {
   val PENDING = FriendRequestStatus("PENDING")
-  val BEFRENDED = FriendRequestStatus("BEFRENDED")
-  val values: List[FriendRequestStatus] = PENDING :: BEFRENDED :: Nil
+  val SENT = FriendRequestStatus("SENT")
+  val CONNECTED = FriendRequestStatus("CONNECTED")
+  val values: List[FriendRequestStatus] = PENDING :: SENT :: CONNECTED :: Nil
 
   def withName(name:String):FriendRequestStatus = values.find(_.name == name).get
 }

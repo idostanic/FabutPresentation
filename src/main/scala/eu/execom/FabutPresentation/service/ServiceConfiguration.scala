@@ -9,6 +9,6 @@ trait ServiceConfiguration extends SlickPersistenceConfiguration {
   lazy val userService: UserService = new UserService(userDao)
   lazy val invitationService: InvitationService = new InvitationService(invitationDao)
   lazy val friendlistService: FriendlistService = new FriendlistService(friendlistDao)
-  lazy val friendlistRequestService: FriendlistRequestService = new FriendlistRequestService(friendlistRequestDao)
+  lazy val friendlistRequestService: FriendlistRequestService = new FriendlistRequestService(friendlistRequestDao, friendlistDao)
   lazy val statusService: StatusService = new StatusService(statusDao)
 }

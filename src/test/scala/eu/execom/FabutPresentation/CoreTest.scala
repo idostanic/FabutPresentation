@@ -8,15 +8,15 @@ import eu.execom.fabut._
 import junit.framework.AssertionFailedError
 import org.joda.time.DateTime
 import org.junit.Assert._
-import org.junit.Assert._
+import org.junit.Assert
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
-import org.junit.After
 import org.junit.Before
+import org.junit.After
 import scala.reflect.runtime.universe.{ Type, typeOf }
 
-abstract class CoreTest extends FabutRepository {
+abstract class CoreTest extends Assert with FabutRepository {
 
   implicit var slickSession: SlickSession = null
   @Before
