@@ -11,9 +11,10 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
   val PENDING_INVITATION = invitationStatusEnum.value("PENDING")
   val USED_INVITATION = invitationStatusEnum.value("USED")
 
-  val friendRequestStatusEnum = enumeration("FriendRequestStatus")
-  val PENDING_REQUEST = friendRequestStatusEnum.value("PENDING")
-  val BEFRENDED = friendRequestStatusEnum.value("BEFRENDED")
+  val friendlistRequestStatusEnum = enumeration("FriendRequestStatus")
+  val PENDING_REQUEST = friendlistRequestStatusEnum.value("PENDING")
+  val SENT_REQUEST = friendlistRequestStatusEnum.value("SENT")
+  val CONNECTED = friendlistRequestStatusEnum.value("CONNECTED")
 
   //  models
 
@@ -39,7 +40,8 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
   val friendlistRequestId = friendlistRequest.int("id").primaryKey
   val friendlistRequester = friendlistRequest.reference("requester", userId)
   val friendlistRequestee = friendlistRequest.reference("requestee", userId)
-  val friendlistRequestStatus = friendlistRequest.enum("status", friendRequestStatusEnum)
+  val friendlistRequestStatus = friendlistRequest.enum("status", friendlistRequestStatusEnum)
+  friendlistRequest.addUnique(friendlistRequester, friendlistRequestee)
 
   val status = sqlModel("Status")
   val statusId = status.int("id").primaryKey

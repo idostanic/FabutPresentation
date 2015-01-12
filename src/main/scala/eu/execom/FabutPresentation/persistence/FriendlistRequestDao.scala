@@ -95,6 +95,8 @@ object FRIENDLISTREQUEST_DOESNT_EXIST extends DataConstraintException("FRIENDLIS
 
 object FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE")
 
+object FRIENDLISTREQUEST_REQUESTERID_REQUESTEEID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLISTREQUEST_REQUESTERID_REQUESTEEID_IS_NOT_UNIQUE")
+
 class FriendlistRequests(tag: Tag) extends Table[FriendlistRequest](tag, "FriendlistRequest") {
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -210,14 +212,14 @@ class FriendlistRequestDao extends GenericSlickDao[FriendlistRequest] {
     query.list
   }
 
-  def findByRequesterIDRequesteeID(requesterID: Int, requesteeID: Int)(implicit session: SlickSession): List[FriendlistRequest] = {
-    logger.trace(s".findByRequesterIDRequesteeID(requesterID: $requesterID, requesteeID: $requesteeID)")
+  def findByRequesterIdRequesteeId(requesterId: Int, requesteeId: Int)(implicit session: SlickSession): Option[FriendlistRequest] = {
+    logger.trace(s".findByRequesterIdRequesteeId(requesterId: $requesterId, requesteeId: $requesteeId)")
 
     var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
-    query = query.filter(_.requesterId === requesterID)
-    query = query.filter(_.requesteeId === requesteeID)
+    query = query.filter(_.requesterId === requesterId)
+    query = query.filter(_.requesteeId === requesteeId)
 
-    query.list
+    query.firstOption
   }
 
 }

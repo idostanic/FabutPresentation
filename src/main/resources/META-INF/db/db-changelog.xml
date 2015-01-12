@@ -74,6 +74,7 @@
         </createTable>
 
         <addUniqueConstraint tableName="FriendlistRequest" columnNames="id"></addUniqueConstraint>
+        <addUniqueConstraint tableName="FriendlistRequest" columnNames="requesterId, requesteeId"></addUniqueConstraint>
 
         <createTable tableName="Status">
             <column autoIncrement="true" name="id" type="BIGINT">
