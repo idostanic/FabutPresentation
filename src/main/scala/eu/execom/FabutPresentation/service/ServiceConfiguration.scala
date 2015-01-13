@@ -10,10 +10,9 @@ trait ServiceConfiguration extends SlickPersistenceConfiguration {
   def smtpUserName: String
   def smtpPassword: String
   def smtpSslOnConnect: Boolean
-  lazy val mailSender = new MailSender(noFacebookEmail, feedbackEmail, smtpUrl, smtpPort, smtpUserName, smtpPassword, smtpSslOnConnect)
-
   def feedbackEmail: String
   def noFacebookEmail: String
+  lazy val mailSender = new MailSender(noFacebookEmail, feedbackEmail, smtpUrl, smtpPort, smtpUserName, smtpPassword, smtpSslOnConnect)
 
   //services
   lazy val userService: UserService = new UserService(userDao, invitationDao, friendlistRequestService)
