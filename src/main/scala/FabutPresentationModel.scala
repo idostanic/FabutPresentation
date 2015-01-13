@@ -58,8 +58,7 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
   val friendlistRequestByRequesterIdRequesteeId = friendlistRequest.dao.findMethod(
     friendlistRequest.query.
       equals("requesterID", friendlistRequester).
-      equals("requesteeID", friendlistRequestee).
-      equals("status", friendlistRequestStatus))
+      equals("requesteeID", friendlistRequestee))
 
   val invitationByUserIdEmail = invitation.dao.findMethod(
     invitation.query.
