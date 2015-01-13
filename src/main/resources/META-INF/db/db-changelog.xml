@@ -19,6 +19,9 @@
             <column name="email" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="numberOfFriends" type="INT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addUniqueConstraint tableName="User" columnNames="id"></addUniqueConstraint>
@@ -45,10 +48,10 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="friend1Id" type="BIGINT">
+            <column name="user1Id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="friend2Id" type="BIGINT">
+            <column name="user2Id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="connectionDate" type="DATE">
@@ -62,10 +65,10 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="requesterId" type="BIGINT">
+            <column name="user1Id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="requesteeId" type="BIGINT">
+            <column name="user2Id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="VARCHAR(255)">
@@ -74,7 +77,7 @@
         </createTable>
 
         <addUniqueConstraint tableName="FriendlistRequest" columnNames="id"></addUniqueConstraint>
-        <addUniqueConstraint tableName="FriendlistRequest" columnNames="requesterId, requesteeId"></addUniqueConstraint>
+        <addUniqueConstraint tableName="FriendlistRequest" columnNames="user1Id, user2Id"></addUniqueConstraint>
 
         <createTable tableName="Status">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -102,24 +105,24 @@
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
                                  onUpdate="NO ACTION"/>
         <!-- FRIENDLIST -->
-        <addForeignKeyConstraint baseTableName="Friendlist" baseColumnNames="friend1Id"
-                                 constraintName="FK_Friendlist.friend1Id_User.id"
+        <addForeignKeyConstraint baseTableName="Friendlist" baseColumnNames="user1Id"
+                                 constraintName="FK_Friendlist.user1Id_User.id"
                                  referencedTableName="User" referencedColumnNames="id"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
                                  onUpdate="NO ACTION"/>
-        <addForeignKeyConstraint baseTableName="Friendlist" baseColumnNames="friend2Id"
-                                 constraintName="FK_Friendlist.friend2Id_User.id"
+        <addForeignKeyConstraint baseTableName="Friendlist" baseColumnNames="user2Id"
+                                 constraintName="FK_Friendlist.user2Id_User.id"
                                  referencedTableName="User" referencedColumnNames="id"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
                                  onUpdate="NO ACTION"/>
         <!-- FRIENDLISTREQUEST -->
-        <addForeignKeyConstraint baseTableName="FriendlistRequest" baseColumnNames="requesterId"
-                                 constraintName="FK_FriendlistRequest.requesterId_User.id"
+        <addForeignKeyConstraint baseTableName="FriendlistRequest" baseColumnNames="user1Id"
+                                 constraintName="FK_FriendlistRequest.user1Id_User.id"
                                  referencedTableName="User" referencedColumnNames="id"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
                                  onUpdate="NO ACTION"/>
-        <addForeignKeyConstraint baseTableName="FriendlistRequest" baseColumnNames="requesteeId"
-                                 constraintName="FK_FriendlistRequest.requesteeId_User.id"
+        <addForeignKeyConstraint baseTableName="FriendlistRequest" baseColumnNames="user2Id"
+                                 constraintName="FK_FriendlistRequest.user2Id_User.id"
                                  referencedTableName="User" referencedColumnNames="id"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
                                  onUpdate="NO ACTION"/>

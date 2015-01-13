@@ -5,7 +5,7 @@ import eu.execom.FabutPresentation.util.Logging
 import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
 import org.joda.time.DateTime
 
-class FriendlistRequestService(val friendlistRequestDao: FriendlistRequestDao, val friendlistDao: FriendlistDao) extends Logging {
+class FriendlistRequestService(val friendlistRequestDao: FriendlistRequestDao, val friendlistDao: FriendlistDao, val userDao: UserDao) extends Logging {
 
   def save(friendlistRequest: FriendlistRequest)(implicit session: SlickSession): Unit = {
     logger.trace(s".save(friendlistRequest: $friendlistRequest)")
@@ -27,7 +27,7 @@ class FriendlistRequestService(val friendlistRequestDao: FriendlistRequestDao, v
 
   def sendFriendlistRequest(user1Id: Int, user2Id: Int)(implicit session: SlickSession): Unit = {
 
-    val friendlistRequest = friendlistRequestDao.findByRequesterIdRequesteeId(user1Id, user2Id)
+    val friendlistRequest = friendlistRequestDao.findByRequesterIDRequesteeID(user1Id, user2Id)
 
     friendlistRequest match {
       case Some(friendlistRequest) =>
@@ -39,7 +39,7 @@ class FriendlistRequestService(val friendlistRequestDao: FriendlistRequestDao, v
             throw USERS_ALREADY_CONNECTED
             println("already connected")
           case FriendRequestStatus.PENDING =>
-            val friendlistRequestReverse = friendlistRequestDao.findByRequesterIdRequesteeId(user2Id, user1Id).get
+            val friendlistRequestReverse = friendlistRequestDao.findByRequesterIDRequesteeID(user2Id, user1Id).get
 
             friendlistRequest.status = FriendRequestStatus.CONNECTED
             friendlistRequestReverse.status = FriendRequestStatus.CONNECTED
@@ -49,6 +49,13 @@ class FriendlistRequestService(val friendlistRequestDao: FriendlistRequestDao, v
             val currentTime = new DateTime()
             friendlistDao.save(new Friendlist(user1Id, user2Id, currentTime))
             friendlistDao.save(new Friendlist(user2Id, user1Id, currentTime))
+
+            val user1 = userDao.findById(user1Id).get
+            val user2 = userDao.findById(user2Id).get
+            user1.numberOfFriends += 1
+            user2.numberOfFriends += 1
+            userDao.update(user1)
+            userDao.update(user2)
         }
       case None =>
         friendlistRequestDao.save(new FriendlistRequest(user1Id, user2Id, FriendRequestStatus.SENT))
