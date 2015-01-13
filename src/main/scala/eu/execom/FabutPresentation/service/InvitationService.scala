@@ -27,9 +27,9 @@ class InvitationService(val invitationDao: InvitationDao, val mailService: MailS
 
   def inviteUser(inviter: User, email: String)(implicit session: SlickSession): Unit = {
     mailService.sendEmail(email, None)
-    val invitation = invitationDao.findByFromIdEmail(inviter.id, email)
-    if (invitation.isDefined) {
-      invitationDao.update(invitation)
+    val invitation = invitationDao.findByUserIdEmailStatus(inviter.id, email, InvitationStatus.PENDING)
+    if (invitation.size > 0) {
+      invitationDao.update(invitation(0))
     } else {
       invitationDao.save(new Invitation(inviter.id, email, InvitationStatus.PENDING))
     }
