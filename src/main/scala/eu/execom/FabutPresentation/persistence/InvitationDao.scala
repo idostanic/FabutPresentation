@@ -216,4 +216,15 @@ class InvitationDao extends GenericSlickDao[Invitation] {
     query.list
   }
 
+  def findByUserIdEmailStatus(userId: Int, email: String, status: InvitationStatus)(implicit session: SlickSession): List[Invitation] = {
+    logger.trace(s".findByUserIdEmailStatus(userId: $userId, email: $email, status: $status)")
+
+    var query: Query[Invitations, Invitations#TableElementType, Seq] = TableQuery[Invitations]
+    query = query.filter(_.fromId === userId)
+    query = query.filter(_.email === email)
+    query = query.filter(_.status === status.name)
+
+    query.list
+  }
+
 }
