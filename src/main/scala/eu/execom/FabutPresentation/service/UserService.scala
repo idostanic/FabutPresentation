@@ -3,9 +3,9 @@ package eu.execom.FabutPresentation.service
 import eu.execom.FabutPresentation.persistence._
 import eu.execom.FabutPresentation.util.Logging
 
-import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
+import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
 
-class UserService(val userDao: UserDao) extends Logging {
+class UserService(val userDao: UserDao, val invitationDao: InvitationDao, val friendlistRequestService: FriendlistRequestService) extends Logging {
 
   def save(user: User)(implicit session: SlickSession): Unit = {
     logger.trace(s".save(user: $user)")
@@ -25,4 +25,14 @@ class UserService(val userDao: UserDao) extends Logging {
     userDao.deleteById(user.id)
   }
 
+  def createUser(user: User)(implicit session: SlickSession): Unit = {
+
+    userDao.save(user)
+    val newFriendsList = invitationDao.findByEmail(user.email)
+    for (friend <- newFriendsList) {
+      friendlistRequestService.sendFriendlistRequest(friend.fromId, user.id)
+      friend.status = InvitationStatus.USED
+      invitationDao.update(friend)
+    }
+  }
 }
