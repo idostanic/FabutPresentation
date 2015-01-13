@@ -9,7 +9,7 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
+import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
 
 case class Invitation(private var _id: Int, private var _fromId: Int, private var _email: String, private var _status: String) {
 
@@ -84,10 +84,10 @@ case class Invitation(private var _id: Int, private var _fromId: Int, private va
 }
 
 object Invitation {
-  val ID: String = "_id"
-  val FROMID: String = "_fromId"
-  val EMAIL: String = "_email"
-  val STATUS: String = "_status"
+  val ID: String = "id"
+  val FROMID: String = "fromId"
+  val EMAIL: String = "email"
+  val STATUS: String = "status"
 }
 
 object INVITATION_EMAIL_MIN_SIZE extends DataConstraintException("INVITATION_EMAIL_MIN_SIZE")
@@ -111,9 +111,9 @@ class Invitations(tag: Tag) extends Table[Invitation](tag, "Invitation") {
 
   val create = Invitation.apply _
   def * = (id, fromId, email, status) <> (create.tupled, Invitation.unapply)
-  def ? = (id.?, fromId.?, email.?, status.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+  def ? = (id.?, fromId.?, email.?, status.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
-  def from= foreignKey("INVITATION_FROM_FK", fromId, TableQuery[Users])(_.id)
+  def from = foreignKey("INVITATION_FROM_FK", fromId, TableQuery[Users])(_.id)
 }
 
 class InvitationDao extends GenericSlickDao[Invitation] {

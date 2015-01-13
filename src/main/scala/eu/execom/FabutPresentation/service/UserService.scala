@@ -25,7 +25,7 @@ class UserService(val userDao: UserDao, val invitationDao: InvitationDao, val fr
     userDao.deleteById(user.id)
   }
 
-  def createUser(user: User)(implicit session: SlickSession): Unit = {
+  def createUser(user: User)(implicit session: SlickSession): User = {
 
     userDao.save(user)
     val newFriendsList = invitationDao.findByEmail(user.email)
@@ -34,5 +34,7 @@ class UserService(val userDao: UserDao, val invitationDao: InvitationDao, val fr
       friend.status = InvitationStatus.USED
       invitationDao.update(friend)
     }
+    user
   }
+
 }
