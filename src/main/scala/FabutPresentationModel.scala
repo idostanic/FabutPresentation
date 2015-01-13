@@ -23,6 +23,7 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
   val userFirstName = user.text("firstName")
   val userLastName = user.text("lastName").optional
   val userEmail = user.text("email").unique.maxSize(50)
+  val userNumberOfFriends = user.int("numberOfFriends")
 
   val invitation = sqlModel("Invitation")
   val invitationId = invitation.int("id").primaryKey
@@ -32,14 +33,14 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
 
   val friendlist = sqlModel("Friendlist")
   val friendlistId = friendlist.int("id").primaryKey
-  val friendlistFriend1Id = friendlist.reference("friend1", userId).indexed
-  val friendlistFriend2Id = friendlist.reference("friend2", userId)
+  val friendlistFriend1Id = friendlist.reference("user1", userId).indexed
+  val friendlistFriend2Id = friendlist.reference("user2", userId)
   val friendlistConnectionDate = friendlist.date("connectionDate")
 
   val friendlistRequest = sqlModel("FriendlistRequest")
   val friendlistRequestId = friendlistRequest.int("id").primaryKey
-  val friendlistRequester = friendlistRequest.reference("requester", userId)
-  val friendlistRequestee = friendlistRequest.reference("requestee", userId)
+  val friendlistRequester = friendlistRequest.reference("user1", userId)
+  val friendlistRequestee = friendlistRequest.reference("user2", userId)
   val friendlistRequestStatus = friendlistRequest.enum("status", friendlistRequestStatusEnum)
   friendlistRequest.addUnique(friendlistRequester, friendlistRequestee)
 

@@ -11,7 +11,7 @@ import org.joda.time._
 import scala.slick.driver.MySQLDriver.simple._
 import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
-case class User(private var _id: Int, private var _firstName: String, private var _lastName: Option[String], private var _email: String) {
+case class User(private var _id: Int, private var _firstName: String, private var _lastName: Option[String], private var _email: String, private var _numberOfFriends: Int) {
 
   private var id_persisted: Int = id
   def idPersisted: Int = id_persisted
@@ -61,16 +61,26 @@ case class User(private var _id: Int, private var _firstName: String, private va
     _email = newEmail
   }
 
+  private var numberOfFriends_persisted: Int = numberOfFriends
+  def numberOfFriendsPersisted: Int = numberOfFriends_persisted
 
-  def this(entity: User) = this(entity._id, entity._firstName, entity._lastName, entity._email)
+  def numberOfFriends: Int = _numberOfFriends
+  def numberOfFriends_=(newNumberOfFriends: Int)(implicit session: SlickSession): Any = if (newNumberOfFriends != numberOfFriends) {
 
-  def this() = this(0, "", None, "")
+    _numberOfFriends = newNumberOfFriends
+  }
 
-  def this(firstName: String, lastName: Option[String], email: String)(implicit session: SlickSession) = {
+
+  def this(entity: User) = this(entity._id, entity._firstName, entity._lastName, entity._email, entity._numberOfFriends)
+
+  def this() = this(0, "", None, "", 0)
+
+  def this(firstName: String, lastName: Option[String], email: String, numberOfFriends: Int)(implicit session: SlickSession) = {
     this()
     this.firstName_=(firstName)(session)
     this.lastName_=(lastName)(session)
     this.email_=(email)(session)
+    this.numberOfFriends_=(numberOfFriends)(session)
   }
 
   def persisted() = {
@@ -78,6 +88,7 @@ case class User(private var _id: Int, private var _firstName: String, private va
     firstName_persisted = firstName
     lastName_persisted = lastName
     email_persisted = email
+    numberOfFriends_persisted = numberOfFriends
   }
 }
 
@@ -86,6 +97,7 @@ object User {
   val FIRSTNAME: String = "_firstName"
   val LASTNAME: String = "_lastName"
   val EMAIL: String = "_email"
+  val NUMBEROFFRIENDS: String = "_numberOfFriends"
 }
 
 object USER_FIRSTNAME_MIN_SIZE extends DataConstraintException("USER_FIRSTNAME_MIN_SIZE")
@@ -116,10 +128,11 @@ class Users(tag: Tag) extends Table[User](tag, "User") {
   def firstName = column[String]("firstName")
   def lastName = column[Option[String]]("lastName")
   def email = column[String]("email")
+  def numberOfFriends = column[Int]("numberOfFriends")
 
   val create = User.apply _
-  def * = (id, firstName, lastName, email) <> (create.tupled, User.unapply)
-  def ? = (id.?, firstName.?, lastName, email.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+  def * = (id, firstName, lastName, email, numberOfFriends) <> (create.tupled, User.unapply)
+  def ? = (id.?, firstName.?, lastName, email.?, numberOfFriends.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
 
 }
@@ -225,6 +238,15 @@ class UserDao extends GenericSlickDao[User] {
     query = query.filter(_.email === email)
 
     query.firstOption
+  }
+
+  def findByNumberOfFriends(numberOfFriends: Int)(implicit session: SlickSession): List[User] = {
+    logger.trace(s".findByNumberOfFriends(numberOfFriends: $numberOfFriends)")
+
+    var query: Query[Users, Users#TableElementType, Seq] = TableQuery[Users]
+    query = query.filter(_.numberOfFriends === numberOfFriends)
+
+    query.list
   }
 
 }
