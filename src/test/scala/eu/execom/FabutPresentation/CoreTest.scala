@@ -15,8 +15,11 @@ import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
 import org.junit.Before
 import org.junit.After
 import scala.reflect.runtime.universe.{ Type, typeOf }
+import org.subethamail.wiser.Wiser
 
-abstract class CoreTest extends Assert with FabutRepository {
+abstract class CoreTest extends Assert with FabutRepository with FabutMail {
+
+  val wiser = wizer
 
   implicit var slickSession: SlickSession = null
   @Before

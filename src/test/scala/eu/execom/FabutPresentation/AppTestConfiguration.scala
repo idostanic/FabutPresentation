@@ -1,8 +1,8 @@
 package eu.execom.FabutPresentation
 
 import java.util.Properties
-
 import eu.execom.FabutPresentation.api._
+import org.subethamail.wiser.Wiser
 
 object AppTestConfiguration extends ApiConfiguration {
 
@@ -30,4 +30,9 @@ object AppTestConfiguration extends ApiConfiguration {
   lazy val feedbackEmail: String = properties.getProperty("feedback.email")
   lazy val noFacebookEmail: String = properties.getProperty("no.facebook.email")
 
+  //start mock SMTP
+  val wizer = new Wiser()
+  wizer.setHostname(smtpUrl)
+  wizer.setPort(smtpPort)
+  wizer.start()
 }
