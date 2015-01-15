@@ -17,24 +17,22 @@ class InvitationServiceTest extends CoreTest {
 
   @Test
   def sendInvitationWithNoPendingInvitation {
-    //    TODO check assertMail function in fabut
     //    setup
     val user = userService.createUser(new User("pera", Some("peric"), "pera@peric.com", 0))
-    println(user)
     //    method
     takeSnapshot()
     invitationService.inviteUser(user, "mika@mikic.com")
 
     //    assert 
     val invitation = invitationDao.findAll
-    println(invitation(0))
+
     assertObject(invitation(0),
       notNull(Invitation.ID),
       value(Invitation.EMAIL, "mika@mikic.com"),
       value(Invitation.FROMID, user.id),
       value(Invitation.STATUS, InvitationStatus.PENDING))
 
-    assertMail("mika@mikic.com", "Welcome")
+    assertMail("mika@mikic.com", "FABUT")
   }
 
 }

@@ -1,9 +1,8 @@
 package eu.execom.FabutPresentation.service
 
-import org.apache.commons.mail.HtmlEmail
-import scala.util.Try
 import eu.execom.FabutPresentation.util.Logging
 import eu.execom.FabutPresentation.persistence.User
+import org.apache.commons.mail.HtmlEmail
 
 class MailSender(
   val noFacebookEmail: String,
@@ -37,7 +36,6 @@ class MailSender(
   }
 
   def sendInvitationEmail(user: User, email: String) {
-
     sendEmail(email, None)
 
   }
