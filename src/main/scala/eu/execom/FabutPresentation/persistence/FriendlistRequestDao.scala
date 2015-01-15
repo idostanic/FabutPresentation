@@ -232,15 +232,4 @@ class FriendlistRequestDao extends GenericSlickDao[FriendlistRequest] {
     query.firstOption
   }
 
-  def findByUserIdWithUser2(userId: Int)(implicit session: SlickSession): List[(FriendlistRequest, FriendlistRequest)] = {
-    logger.trace(s".findByUserIdWithUser2(userId: $userId)")
-
-    var query: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
-    query = query.filter(_.id === userId)
-
-    var query1: Query[FriendlistRequests, FriendlistRequests#TableElementType, Seq] = TableQuery[FriendlistRequests]
-
-    query.join(query1).on(_.user2Id === _.id).list
-  }
-
 }
