@@ -37,13 +37,23 @@ class UserService(val userDao: UserDao, val invitationDao: InvitationDao, val fr
     user
   }
 
-  def deleteUser(user: User)(implicit session: SlickSession):Boolean ={
-    userDao.deleteById(user.id)
+  def deleteUserAccount(user: User)(implicit session: SlickSession): Unit = {
+
     val invitation = invitationDao.findByFromId(user.id)
-    if(invitation.size > 0){
+    if (invitation.size > 0) {
       invitationDao.deleteById(invitation.head.id)
     }
-    true
-  }
 
+    val friendlists = friendlistDao.findByUserIdAllFriendlists(user.id)
+    for (friendlist <- friendlists) {
+      friendlistDao.deleteById(friendlist.id)
+    }
+
+    val friendlistRequests = friendlistRequestDao.findByUserIdAllFriendlistRequests(user.id)
+    for (friendlistRequest <- friendlistRequests) {
+      friendlistRequestDao.deleteById(friendlistRequest.id)
+    }
+
+    delete(user)
+  }
 }
