@@ -226,5 +226,4 @@ class InvitationDao extends GenericSlickDao[Invitation] {
 
     query.list
   }
-
 }

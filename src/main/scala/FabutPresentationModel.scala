@@ -65,5 +65,4 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
       equals("userId", invitationFrom).
       equals("email", invitationEmail).
       equals("status", invitationStatus))
-
 }
