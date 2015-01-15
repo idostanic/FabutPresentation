@@ -95,6 +95,8 @@ object FRIENDLIST_DOESNT_EXIST extends DataConstraintException("FRIENDLIST_DOESN
 
 object FRIENDLIST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_ID_IS_NOT_UNIQUE")
 
+object FRIENDLIST_USER1ID_USER2ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_USER1ID_USER2ID_IS_NOT_UNIQUE")
+
 class Friendlists(tag: Tag) extends Table[Friendlist](tag, "Friendlist") {
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -208,6 +210,27 @@ class FriendlistDao extends GenericSlickDao[Friendlist] {
     query = query.filter(_.connectionDate === new java.sql.Date(connectionDate.getMillis))
 
     query.list
+  }
+
+  def findByUser1IdUser2Id(user1Id: Int, user2Id: Int)(implicit session: SlickSession): Option[Friendlist] = {
+    logger.trace(s".findByUser1IdUser2Id(user1Id: $user1Id, user2Id: $user2Id)")
+
+    var query: Query[Friendlists, Friendlists#TableElementType, Seq] = TableQuery[Friendlists]
+    query = query.filter(_.user1Id === user1Id)
+    query = query.filter(_.user2Id === user2Id)
+
+    query.firstOption
+  }
+
+  def findByUserIdWithUser2(userId: Int)(implicit session: SlickSession): List[(Friendlist, Friendlist)] = {
+    logger.trace(s".findByUserIdWithUser2(userId: $userId)")
+
+    var query: Query[Friendlists, Friendlists#TableElementType, Seq] = TableQuery[Friendlists]
+    query = query.filter(_.id === userId)
+
+    var query1: Query[Friendlists, Friendlists#TableElementType, Seq] = TableQuery[Friendlists]
+
+    query.join(query1).on(_.user2Id === _.id).list
   }
 
 }

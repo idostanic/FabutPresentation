@@ -36,6 +36,7 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
   val friendlistFriend1Id = friendlist.reference("user1", userId).indexed
   val friendlistFriend2Id = friendlist.reference("user2", userId)
   val friendlistConnectionDate = friendlist.date("connectionDate")
+  friendlist.addUnique(friendlistFriend1Id, friendlistFriend2Id)
 
   val friendlistRequest = sqlModel("FriendlistRequest")
   val friendlistRequestId = friendlistRequest.int("id").primaryKey
@@ -66,4 +67,13 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
       equals("email", invitationEmail).
       equals("status", invitationStatus))
 
+  val findAllFriendlistsByUserId = friendlist.dao.findMethod(
+    friendlist.query.
+      equals("userId", userId).
+      join(friendlistFriend2Id, friendlist.query))
+
+  val findAllFriendlistRequestsByUserId = friendlistRequest.dao.findMethod(
+    friendlistRequest.query.
+      equals("userId", userId).
+      join(friendlistRequestee, friendlistRequest.query))
 }

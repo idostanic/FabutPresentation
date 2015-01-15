@@ -60,6 +60,7 @@
         </createTable>
 
         <addUniqueConstraint tableName="Friendlist" columnNames="id"></addUniqueConstraint>
+        <addUniqueConstraint tableName="Friendlist" columnNames="user1Id, user2Id"></addUniqueConstraint>
 
         <createTable tableName="FriendlistRequest">
             <column autoIncrement="true" name="id" type="BIGINT">
