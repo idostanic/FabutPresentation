@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="1" author="generator">
+
+        <createTable tableName="User">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="firstName" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastName" type="VARCHAR(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="email" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numberOfFriends" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="User" columnNames="id"></addUniqueConstraint>
+        <addUniqueConstraint tableName="User" columnNames="email"></addUniqueConstraint>
+
+        <createTable tableName="Invitation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="fromId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="Invitation" columnNames="id"></addUniqueConstraint>
+
+        <createTable tableName="Friendlist">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user1Id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user2Id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="connectionDate" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="Friendlist" columnNames="id"></addUniqueConstraint>
+
+        <createTable tableName="FriendlistRequest">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user1Id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user2Id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="FriendlistRequest" columnNames="id"></addUniqueConstraint>
+        <addUniqueConstraint tableName="FriendlistRequest" columnNames="user1Id, user2Id"></addUniqueConstraint>
+
+        <createTable tableName="Status">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="content" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fromIdId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creationDate" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="Status" columnNames="id"></addUniqueConstraint>
+
+        <!-- USER -->
+
+        <!-- INVITATION -->
+        <addForeignKeyConstraint baseTableName="Invitation" baseColumnNames="fromId"
+                                 constraintName="FK_Invitation.fromId_User.id"
+                                 referencedTableName="User" referencedColumnNames="id"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+        <!-- FRIENDLIST -->
+        <addForeignKeyConstraint baseTableName="Friendlist" baseColumnNames="user1Id"
+                                 constraintName="FK_Friendlist.user1Id_User.id"
+                                 referencedTableName="User" referencedColumnNames="id"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="Friendlist" baseColumnNames="user2Id"
+                                 constraintName="FK_Friendlist.user2Id_User.id"
+                                 referencedTableName="User" referencedColumnNames="id"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+        <!-- FRIENDLISTREQUEST -->
+        <addForeignKeyConstraint baseTableName="FriendlistRequest" baseColumnNames="user1Id"
+                                 constraintName="FK_FriendlistRequest.user1Id_User.id"
+                                 referencedTableName="User" referencedColumnNames="id"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="FriendlistRequest" baseColumnNames="user2Id"
+                                 constraintName="FK_FriendlistRequest.user2Id_User.id"
+                                 referencedTableName="User" referencedColumnNames="id"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+        <!-- STATUS -->
+        <addForeignKeyConstraint baseTableName="Status" baseColumnNames="fromIdId"
+                                 constraintName="FK_Status.fromIdId_User.id"
+                                 referencedTableName="User" referencedColumnNames="id"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+    </changeSet>
+
+</databaseChangeLog>
