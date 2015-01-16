@@ -19,8 +19,6 @@ import org.subethamail.wiser.Wiser
 
 abstract class CoreTest extends Assert with FabutRepository with FabutMail {
 
-  val wiser = wizer
-
   implicit var slickSession: SlickSession = null
   @Before
   override def before() = {

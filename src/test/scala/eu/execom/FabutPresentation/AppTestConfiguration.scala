@@ -31,8 +31,8 @@ object AppTestConfiguration extends ApiConfiguration {
   lazy val noFacebookEmail: String = properties.getProperty("no.facebook.email")
 
   //start mock SMTP
-  val wizer = new Wiser()
-  wizer.setHostname(smtpUrl)
-  wizer.setPort(smtpPort)
-  wizer.start()
+  val wiser = new Wiser()
+  wiser.setHostname(smtpUrl)
+  wiser.setPort(smtpPort)
+  wiser.start()
 }
