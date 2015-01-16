@@ -34,5 +34,4 @@ class InvitationServiceTest extends CoreTest {
 
     assertMail("mika@mikic.com", "FABUT")
   }
-
 }
