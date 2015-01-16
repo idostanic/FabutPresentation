@@ -84,19 +84,19 @@ case class Invitation(private var _id: Int, private var _fromId: Int, private va
 }
 
 object Invitation {
-  val ID: String = "_id"
-  val FROMID: String = "_fromId"
-  val EMAIL: String = "_email"
-  val STATUS: String = "_status"
+  val ID: String = "id"
+  val FROMID: String = "fromId"
+  val EMAIL: String = "email"
+  val STATUS: String = "status"
 }
+
+object INVITATION_EMAIL_IS_REQUIRED extends DataConstraintException("INVITATION_EMAIL_IS_REQUIRED")
 
 object INVITATION_EMAIL_MIN_SIZE extends DataConstraintException("INVITATION_EMAIL_MIN_SIZE")
 
 object INVITATION_EMAIL_MAX_SIZE extends DataConstraintException("INVITATION_EMAIL_MAX_SIZE")
 
-object INVITATION_EMAIL_IS_REQUIRED extends BadRequestException("INVITATION_EMAIL_IS_REQUIRED")
-
-object INVITATION_STATUS_IS_REQUIRED extends BadRequestException("INVITATION_STATUS_IS_REQUIRED")
+object INVITATION_STATUS_IS_REQUIRED extends DataConstraintException("INVITATION_STATUS_IS_REQUIRED")
 
 object INVITATION_DOESNT_EXIST extends DataConstraintException("INVITATION_DOESNT_EXIST")
 

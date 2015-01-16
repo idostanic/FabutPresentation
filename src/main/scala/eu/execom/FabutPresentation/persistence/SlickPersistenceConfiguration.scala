@@ -43,6 +43,7 @@ trait SlickPersistenceConfiguration {
 
   //DAO
   val userDao: UserDao = new UserDao
+  val userSessionDao: UserSessionDao = new UserSessionDao
   val invitationDao: InvitationDao = new InvitationDao
   val friendlistDao: FriendlistDao = new FriendlistDao
   val friendlistRequestDao: FriendlistRequestDao = new FriendlistRequestDao

@@ -7,10 +7,11 @@ import javax.servlet.ServletContext
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.joran.JoranConfigurator
 import eu.execom.FabutPresentation.api._
+import eu.execom.FabutPresentation.rest.HttpApi
 import org.scalatra.LifeCycle
 import org.slf4j.LoggerFactory
 
-class AppConfiguration extends ApiConfiguration {
+class AppConfiguration extends LifeCycle with ApiConfiguration {
 
   val logConfigurationFile = System.getenv("FABUTPRESENTATION_HOME") + "/logback.xml"
   val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
@@ -35,6 +36,9 @@ class AppConfiguration extends ApiConfiguration {
   lazy val mysqlPrepStmtCacheSize: Int = properties.getProperty("mysql.prepStmtCacheSize").toInt
   lazy val mysqlPrepStmtCacheSqlLimit: Int = properties.getProperty("mysql.prepStmtCacheSqlLimit").toInt
   lazy val mysqlUseServerPrepStmts: Boolean = properties.getProperty("mysql.useServerPrepStmts").toBoolean
+  lazy val appEmail: String = properties.getProperty("app.email")
+  lazy val appName: String = properties.getProperty("app.name")
+  lazy val appUrl: String = properties.getProperty("app.url")
 
   def initialize():Unit = {
     //TODO do initialization
@@ -42,6 +46,18 @@ class AppConfiguration extends ApiConfiguration {
 
   def cleanup():Unit = {
     //TODO do cleanup
+  }
+
+  lazy val httpAPI = new HttpApi(slickDb, authenticationApi)
+
+  override def init(context: ServletContext) {
+
+    context.mount(httpAPI, "/api/*") // mount servlets
+    initialize()
+  }
+
+  override def destroy(context: ServletContext): Unit = {
+    cleanup()
   }
 
 }

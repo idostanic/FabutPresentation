@@ -19,7 +19,7 @@ object FabutPresentationModel extends Project("eu.execom", "FabutPresentation") 
   //  models
 
   val user = securedSqlModel("User")
-  val userId = user.int("id").primaryKey
+  val userId = user.idProperty
   val userFirstName = user.text("firstName")
   val userLastName = user.text("lastName").optional
   val userEmail = user.text("email").unique.maxSize(50)

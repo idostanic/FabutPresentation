@@ -22,5 +22,8 @@ object AppTestConfiguration extends ApiConfiguration {
   lazy val mysqlPrepStmtCacheSize: Int = properties.getProperty("mysql.prepStmtCacheSize").toInt
   lazy val mysqlPrepStmtCacheSqlLimit: Int = properties.getProperty("mysql.prepStmtCacheSqlLimit").toInt
   lazy val mysqlUseServerPrepStmts: Boolean = properties.getProperty("mysql.useServerPrepStmts").toBoolean
+  lazy val appEmail: String = properties.getProperty("app.email")
+  lazy val appName: String = properties.getProperty("app.name")
+  lazy val appUrl: String = properties.getProperty("app.url")
 
 }

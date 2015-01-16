@@ -46,7 +46,7 @@ case class FriendlistRequest(private var _id: Int, private var _user1Id: Int, pr
   def status: FriendRequestStatus = FriendRequestStatus.withName(_status)
   def status_=(newStatus: FriendRequestStatus)(implicit session: SlickSession): Any = if (newStatus != status) {
 
-    if (newStatus == null) throw FRIENDLISTREQUEST_STATUS_IS_REQUIRED
+    if (newStatus == null) throw FRIENDLIST_REQUEST_STATUS_IS_REQUIRED
 
     _status = newStatus.name
   }
@@ -83,19 +83,19 @@ case class FriendlistRequest(private var _id: Int, private var _user1Id: Int, pr
 }
 
 object FriendlistRequest {
-  val ID: String = "_id"
-  val USER1ID: String = "_user1Id"
-  val USER2ID: String = "_user2Id"
-  val STATUS: String = "_status"
+  val ID: String = "id"
+  val USER1ID: String = "user1Id"
+  val USER2ID: String = "user2Id"
+  val STATUS: String = "status"
 }
 
-object FRIENDLISTREQUEST_STATUS_IS_REQUIRED extends BadRequestException("FRIENDLISTREQUEST_STATUS_IS_REQUIRED")
+object FRIENDLIST_REQUEST_STATUS_IS_REQUIRED extends DataConstraintException("FRIENDLIST_REQUEST_STATUS_IS_REQUIRED")
 
 object FRIENDLISTREQUEST_DOESNT_EXIST extends DataConstraintException("FRIENDLISTREQUEST_DOESNT_EXIST")
 
-object FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE")
+object FRIENDLIST_REQUEST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_REQUEST_ID_IS_NOT_UNIQUE")
 
-object FRIENDLISTREQUEST_USER1ID_USER2ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLISTREQUEST_USER1ID_USER2ID_IS_NOT_UNIQUE")
+object FRIENDLIST_REQUEST_USER_1_ID_USER_2_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_REQUEST_USER_1_ID_USER_2_ID_IS_NOT_UNIQUE")
 
 class FriendlistRequests(tag: Tag) extends Table[FriendlistRequest](tag, "FriendlistRequest") {
 

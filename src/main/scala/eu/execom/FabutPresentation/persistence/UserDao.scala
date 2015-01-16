@@ -28,9 +28,9 @@ case class User(private var _id: Int, private var _firstName: String, private va
   def firstName: String = _firstName
   def firstName_=(newFirstName: String)(implicit session: SlickSession): Any = if (newFirstName != firstName) {
 
-    if (newFirstName == null) throw USER_FIRSTNAME_IS_REQUIRED
-    if (newFirstName.size < 0) throw USER_FIRSTNAME_MIN_SIZE
-    if (newFirstName.size > 1024) throw USER_FIRSTNAME_MAX_SIZE
+    if (newFirstName == null) throw USER_FIRST_NAME_IS_REQUIRED
+    if (newFirstName.size < 0) throw USER_FIRST_NAME_MIN_SIZE
+    if (newFirstName.size > 1024) throw USER_FIRST_NAME_MAX_SIZE
 
     _firstName = newFirstName
   }
@@ -41,8 +41,8 @@ case class User(private var _id: Int, private var _firstName: String, private va
   def lastName: Option[String] = _lastName
   def lastName_=(newLastName: Option[String])(implicit session: SlickSession): Any = if (newLastName != lastName) {
     if (newLastName.isDefined) {
-      if (newLastName.get.size < 0) throw USER_LASTNAME_MIN_SIZE
-      if (newLastName.get.size > 1024) throw USER_LASTNAME_MAX_SIZE
+      if (newLastName.get.size < 0) throw USER_LAST_NAME_MIN_SIZE
+      if (newLastName.get.size > 1024) throw USER_LAST_NAME_MAX_SIZE
     }
     _lastName = newLastName
   }
@@ -93,28 +93,28 @@ case class User(private var _id: Int, private var _firstName: String, private va
 }
 
 object User {
-  val ID: String = "_id"
-  val FIRSTNAME: String = "_firstName"
-  val LASTNAME: String = "_lastName"
-  val EMAIL: String = "_email"
-  val NUMBEROFFRIENDS: String = "_numberOfFriends"
+  val ID: String = "id"
+  val FIRSTNAME: String = "firstName"
+  val LASTNAME: String = "lastName"
+  val EMAIL: String = "email"
+  val NUMBEROFFRIENDS: String = "numberOfFriends"
 }
 
-object USER_FIRSTNAME_MIN_SIZE extends DataConstraintException("USER_FIRSTNAME_MIN_SIZE")
+object USER_FIRST_NAME_IS_REQUIRED extends DataConstraintException("USER_FIRST_NAME_IS_REQUIRED")
 
-object USER_FIRSTNAME_MAX_SIZE extends DataConstraintException("USER_FIRSTNAME_MAX_SIZE")
+object USER_FIRST_NAME_MIN_SIZE extends DataConstraintException("USER_FIRST_NAME_MIN_SIZE")
 
-object USER_FIRSTNAME_IS_REQUIRED extends BadRequestException("USER_FIRSTNAME_IS_REQUIRED")
+object USER_FIRST_NAME_MAX_SIZE extends DataConstraintException("USER_FIRST_NAME_MAX_SIZE")
 
-object USER_LASTNAME_MIN_SIZE extends DataConstraintException("USER_LASTNAME_MIN_SIZE")
+object USER_LAST_NAME_MIN_SIZE extends DataConstraintException("USER_LAST_NAME_MIN_SIZE")
 
-object USER_LASTNAME_MAX_SIZE extends DataConstraintException("USER_LASTNAME_MAX_SIZE")
+object USER_LAST_NAME_MAX_SIZE extends DataConstraintException("USER_LAST_NAME_MAX_SIZE")
+
+object USER_EMAIL_IS_REQUIRED extends DataConstraintException("USER_EMAIL_IS_REQUIRED")
 
 object USER_EMAIL_MIN_SIZE extends DataConstraintException("USER_EMAIL_MIN_SIZE")
 
 object USER_EMAIL_MAX_SIZE extends DataConstraintException("USER_EMAIL_MAX_SIZE")
-
-object USER_EMAIL_IS_REQUIRED extends BadRequestException("USER_EMAIL_IS_REQUIRED")
 
 object USER_DOESNT_EXIST extends DataConstraintException("USER_DOESNT_EXIST")
 
