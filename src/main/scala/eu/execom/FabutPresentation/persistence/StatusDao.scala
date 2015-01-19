@@ -50,7 +50,7 @@ case class Status(private var _id: Int, private var _content: String, private va
   def creationDate: DateTime = new org.joda.time.DateTime(_creationDate)
   def creationDate_=(newCreationDate: DateTime)(implicit session: SlickSession): Any = if (newCreationDate != creationDate) {
 
-    if (newCreationDate == null) throw STATUS_CREATIONDATE_IS_REQUIRED
+    if (newCreationDate == null) throw STATUS_CREATION_DATE_IS_REQUIRED
 
     _creationDate = new java.sql.Date(newCreationDate.getMillis)
   }
@@ -84,19 +84,19 @@ case class Status(private var _id: Int, private var _content: String, private va
 }
 
 object Status {
-  val ID: String = "_id"
-  val CONTENT: String = "_content"
-  val FROMIDID: String = "_fromIdId"
-  val CREATIONDATE: String = "_creationDate"
+  val ID: String = "id"
+  val CONTENT: String = "content"
+  val FROMIDID: String = "fromIdId"
+  val CREATIONDATE: String = "creationDate"
 }
+
+object STATUS_CONTENT_IS_REQUIRED extends DataConstraintException("STATUS_CONTENT_IS_REQUIRED")
 
 object STATUS_CONTENT_MIN_SIZE extends DataConstraintException("STATUS_CONTENT_MIN_SIZE")
 
 object STATUS_CONTENT_MAX_SIZE extends DataConstraintException("STATUS_CONTENT_MAX_SIZE")
 
-object STATUS_CONTENT_IS_REQUIRED extends BadRequestException("STATUS_CONTENT_IS_REQUIRED")
-
-object STATUS_CREATIONDATE_IS_REQUIRED extends BadRequestException("STATUS_CREATIONDATE_IS_REQUIRED")
+object STATUS_CREATION_DATE_IS_REQUIRED extends DataConstraintException("STATUS_CREATION_DATE_IS_REQUIRED")
 
 object STATUS_DOESNT_EXIST extends DataConstraintException("STATUS_DOESNT_EXIST")
 

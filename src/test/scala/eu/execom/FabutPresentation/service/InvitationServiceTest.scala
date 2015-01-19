@@ -11,7 +11,7 @@ import eu.execom.FabutPresentation.persistence.User
 import eu.execom.FabutPresentation.persistence.Invitation
 import eu.execom.FabutPresentation.persistence.InvitationStatus
 import eu.execom.fabut.pair.AssertMail
-import eu.execom.fabut.FabutMail
+
 
 class InvitationServiceTest extends CoreTest {
 

@@ -9,7 +9,7 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
+import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
 case class FriendlistRequest(private var _id: Int, private var _user1Id: Int, private var _user2Id: Int, private var _status: String) {
 
@@ -46,7 +46,7 @@ case class FriendlistRequest(private var _id: Int, private var _user1Id: Int, pr
   def status: FriendRequestStatus = FriendRequestStatus.withName(_status)
   def status_=(newStatus: FriendRequestStatus)(implicit session: SlickSession): Any = if (newStatus != status) {
 
-    if (newStatus == null) throw FRIENDLISTREQUEST_STATUS_IS_REQUIRED
+    if (newStatus == null) throw FRIENDLIST_REQUEST_STATUS_IS_REQUIRED
 
     _status = newStatus.name
   }
@@ -83,21 +83,19 @@ case class FriendlistRequest(private var _id: Int, private var _user1Id: Int, pr
 }
 
 object FriendlistRequest {
-
   val ID: String = "id"
   val USER1ID: String = "user1Id"
   val USER2ID: String = "user2Id"
   val STATUS: String = "status"
-
 }
 
-object FRIENDLISTREQUEST_STATUS_IS_REQUIRED extends BadRequestException("FRIENDLISTREQUEST_STATUS_IS_REQUIRED")
+object FRIENDLIST_REQUEST_STATUS_IS_REQUIRED extends DataConstraintException("FRIENDLIST_REQUEST_STATUS_IS_REQUIRED")
 
 object FRIENDLISTREQUEST_DOESNT_EXIST extends DataConstraintException("FRIENDLISTREQUEST_DOESNT_EXIST")
 
-object FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLISTREQUEST_ID_IS_NOT_UNIQUE")
+object FRIENDLIST_REQUEST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_REQUEST_ID_IS_NOT_UNIQUE")
 
-object FRIENDLISTREQUEST_USER1ID_USER2ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLISTREQUEST_USER1ID_USER2ID_IS_NOT_UNIQUE")
+object FRIENDLIST_REQUEST_USER_1_ID_USER_2_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_REQUEST_USER_1_ID_USER_2_ID_IS_NOT_UNIQUE")
 
 class FriendlistRequests(tag: Tag) extends Table[FriendlistRequest](tag, "FriendlistRequest") {
 
@@ -107,13 +105,11 @@ class FriendlistRequests(tag: Tag) extends Table[FriendlistRequest](tag, "Friend
   def status = column[String]("status")
 
   val create = FriendlistRequest.apply _
-
   def * = (id, user1Id, user2Id, status) <> (create.tupled, FriendlistRequest.unapply)
-  def ? = (id.?, user1Id.?, user2Id.?, status.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+  def ? = (id.?, user1Id.?, user2Id.?, status.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
-  def user1 = foreignKey("FRIENDLISTREQUEST_USER1_FK", user1Id, TableQuery[Users])(_.id)
-  def user2 = foreignKey("FRIENDLISTREQUEST_USER2_FK", user2Id, TableQuery[Users])(_.id)
-
+  def user1= foreignKey("FRIENDLISTREQUEST_USER1_FK", user1Id, TableQuery[Users])(_.id)
+  def user2= foreignKey("FRIENDLISTREQUEST_USER2_FK", user2Id, TableQuery[Users])(_.id)
 }
 
 class FriendlistRequestDao extends GenericSlickDao[FriendlistRequest] {

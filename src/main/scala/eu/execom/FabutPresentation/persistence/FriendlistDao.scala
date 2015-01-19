@@ -9,7 +9,7 @@ import eu.execom.FabutPresentation.util._
 import org.joda.time._
 
 import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
+import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
 case class Friendlist(private var _id: Int, private var _user1Id: Int, private var _user2Id: Int, private var _connectionDate: Date) {
 
@@ -46,7 +46,7 @@ case class Friendlist(private var _id: Int, private var _user1Id: Int, private v
   def connectionDate: DateTime = new org.joda.time.DateTime(_connectionDate)
   def connectionDate_=(newConnectionDate: DateTime)(implicit session: SlickSession): Any = if (newConnectionDate != connectionDate) {
 
-    if (newConnectionDate == null) throw FRIENDLIST_CONNECTIONDATE_IS_REQUIRED
+    if (newConnectionDate == null) throw FRIENDLIST_CONNECTION_DATE_IS_REQUIRED
 
     _connectionDate = new java.sql.Date(newConnectionDate.getMillis)
   }
@@ -83,19 +83,19 @@ case class Friendlist(private var _id: Int, private var _user1Id: Int, private v
 }
 
 object Friendlist {
-
   val ID: String = "id"
   val USER1ID: String = "user1Id"
   val USER2ID: String = "user2Id"
   val CONNECTIONDATE: String = "connectionDate"
-
 }
 
-object FRIENDLIST_CONNECTIONDATE_IS_REQUIRED extends BadRequestException("FRIENDLIST_CONNECTIONDATE_IS_REQUIRED")
+object FRIENDLIST_CONNECTION_DATE_IS_REQUIRED extends DataConstraintException("FRIENDLIST_CONNECTION_DATE_IS_REQUIRED")
 
 object FRIENDLIST_DOESNT_EXIST extends DataConstraintException("FRIENDLIST_DOESNT_EXIST")
 
 object FRIENDLIST_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_ID_IS_NOT_UNIQUE")
+
+object FRIENDLIST_USER_1_ID_USER_2_ID_IS_NOT_UNIQUE extends DataConstraintException("FRIENDLIST_USER_1_ID_USER_2_ID_IS_NOT_UNIQUE")
 
 class Friendlists(tag: Tag) extends Table[Friendlist](tag, "Friendlist") {
 
@@ -105,13 +105,11 @@ class Friendlists(tag: Tag) extends Table[Friendlist](tag, "Friendlist") {
   def connectionDate = column[Date]("connectionDate")
 
   val create = Friendlist.apply _
-
   def * = (id, user1Id, user2Id, connectionDate) <> (create.tupled, Friendlist.unapply)
-  def ? = (id.?, user1Id.?, user2Id.?, connectionDate.?).shaped.<>({ r => import r._; _1.map(_ => create.tupled((_1.get, _2.get, _3.get, _4.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+  def ? = (id.?, user1Id.?, user2Id.?, connectionDate.?).shaped.<>({r=>import r._; _1.map(_=> create.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
-  def user1 = foreignKey("FRIENDLIST_USER1_FK", user1Id, TableQuery[Users])(_.id)
-  def user2 = foreignKey("FRIENDLIST_USER2_FK", user2Id, TableQuery[Users])(_.id)
-
+  def user1= foreignKey("FRIENDLIST_USER1_FK", user1Id, TableQuery[Users])(_.id)
+  def user2= foreignKey("FRIENDLIST_USER2_FK", user2Id, TableQuery[Users])(_.id)
 }
 
 class FriendlistDao extends GenericSlickDao[Friendlist] {
@@ -214,6 +212,7 @@ class FriendlistDao extends GenericSlickDao[Friendlist] {
     query.list
   }
 
+
   def findByUserIdAllFriendlists(userId: Int)(implicit session: SlickSession): List[Friendlist] = {
     logger.trace(s".findByUserIdAllFriendlists(userId: $userId)")
 
@@ -229,4 +228,16 @@ class FriendlistDao extends GenericSlickDao[Friendlist] {
 
     query1.list ++ query.list
   }
+
+  def findByUser1IdUser2Id(user1Id: Int, user2Id: Int)(implicit session: SlickSession): Option[Friendlist] = {
+    logger.trace(s".findByUser1IdUser2Id(user1Id: $user1Id, user2Id: $user2Id)")
+
+    var query: Query[Friendlists, Friendlists#TableElementType, Seq] = TableQuery[Friendlists]
+    query = query.filter(_.user1Id === user1Id)
+    query = query.filter(_.user2Id === user2Id)
+
+    query.firstOption
+  }
+
+
 }

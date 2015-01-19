@@ -22,17 +22,20 @@ object AppTestConfiguration extends ApiConfiguration {
   lazy val mysqlPrepStmtCacheSize: Int = properties.getProperty("mysql.prepStmtCacheSize").toInt
   lazy val mysqlPrepStmtCacheSqlLimit: Int = properties.getProperty("mysql.prepStmtCacheSqlLimit").toInt
   lazy val mysqlUseServerPrepStmts: Boolean = properties.getProperty("mysql.useServerPrepStmts").toBoolean
+  lazy val appEmail: String = properties.getProperty("app.email")
+  lazy val appName: String = properties.getProperty("app.name")
+  lazy val appUrl: String = properties.getProperty("app.url")
   lazy val smtpUrl: String = properties.getProperty("smtp.url")
   lazy val smtpPort: Int = properties.getProperty("smtp.port").toInt
   lazy val smtpUserName: String = properties.getProperty("smtp.username")
   lazy val smtpPassword: String = properties.getProperty("smtp.password")
   lazy val smtpSslOnConnect: Boolean = properties.getProperty("smtp.sslonconnect").toBoolean
-  lazy val feedbackEmail: String = properties.getProperty("feedback.email")
-  lazy val noFacebookEmail: String = properties.getProperty("no.facebook.email")
+
 
   //start mock SMTP
   val wiser = new Wiser()
   wiser.setHostname(smtpUrl)
   wiser.setPort(smtpPort)
   wiser.start()
+
 }

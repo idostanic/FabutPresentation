@@ -2,8 +2,8 @@ package eu.execom.FabutPresentation.service
 
 import eu.execom.FabutPresentation.persistence._
 import eu.execom.FabutPresentation.util.Logging
-
 import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
+import eu.execom.FabutPresentation.service.MailSender
 
 class InvitationService(val invitationDao: InvitationDao, val mailService: MailSender) extends Logging {
 

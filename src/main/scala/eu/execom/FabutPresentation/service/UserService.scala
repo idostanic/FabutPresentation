@@ -3,7 +3,7 @@ package eu.execom.FabutPresentation.service
 import eu.execom.FabutPresentation.persistence._
 import eu.execom.FabutPresentation.util.Logging
 
-import scala.slick.jdbc.JdbcBackend.{ Session => SlickSession }
+import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
 class UserService(val userDao: UserDao, val invitationDao: InvitationDao, val friendlistDao: FriendlistDao, val friendlistRequestDao: FriendlistRequestDao, val friendlistRequestService: FriendlistRequestService) extends Logging {
 
@@ -24,6 +24,7 @@ class UserService(val userDao: UserDao, val invitationDao: InvitationDao, val fr
 
     userDao.deleteById(user.id)
   }
+
 
   def createUser(user: User)(implicit session: SlickSession): User = {
 
@@ -56,4 +57,5 @@ class UserService(val userDao: UserDao, val invitationDao: InvitationDao, val fr
 
     delete(user)
   }
+
 }

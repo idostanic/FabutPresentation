@@ -5,8 +5,7 @@ import eu.execom.FabutPresentation.persistence.User
 import org.apache.commons.mail.HtmlEmail
 
 class MailSender(
-  val noFacebookEmail: String,
-  val feedbackEmail: String,
+
   val smtpUrl: String,
   val smtpPort: Int,
   val smtpUserName: String,

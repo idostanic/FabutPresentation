@@ -1,10 +1,11 @@
-package eu.execom.fabut
+package eu.execom.FabutPresentation
 
 import junit.framework.AssertionFailedError
 import org.subethamail.wiser.Wiser
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-import eu.execom.FabutPresentation.AppTestConfiguration
+import eu.execom.fabut.InitFabut
+
 
 /**
  * Mail asserting extension of Fabut
