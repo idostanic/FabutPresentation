@@ -14,8 +14,8 @@ import scala.slick.jdbc.JdbcBackend.{Session => SlickSession}
 
 abstract class CoreTest extends FabutRepository {
 
+
   implicit var slickSession: SlickSession = null
-  
   @Before
   override def before() = {
 
